@@ -1,0 +1,34 @@
+﻿@model CLDV7111wPOE.Models.Booking
+
+<h2>Create Booking</h2>
+
+<form asp-action="Create">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label>Select Event</label>
+        <select asp-for="EventId" asp-items="ViewBag.EventId" class="form-control">
+            <option value="">-- Select Event --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Select Venue</label>
+        <select asp-for="VenueId" asp-items="ViewBag.VenueId" class="form-control">
+            <option value="">-- Select Venue --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Select User</label>
+        <select asp-for="CreatedBy" asp-items="ViewBag.UserId" class="form-control">
+            <option value="">-- Select User --</option>
+        </select>
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Create Booking</button>
+
+</form>

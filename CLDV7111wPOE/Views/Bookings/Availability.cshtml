@@ -1,0 +1,51 @@
+﻿@model IEnumerable<CLDV7111wPOE.Models.VenueAvailabilityVM>
+
+<h2>Check Venue Availability</h2>
+
+<form method="get" asp-action="Availability">
+    <div class="form-group">
+        <label>Select Date</label>
+        <input type="date"
+               name="selectedDate"
+               value="@ViewBag.SelectedDate"
+               class="form-control" />
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Check Availability
+    </button>
+</form>
+
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Venue</th>
+            <th>Location</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.VenueName</td>
+                <td>@item.Location</td>
+                <td>
+                    @if (item.IsAvailable)
+                    {
+                        <span class="text-success">Available</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Unavailable</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

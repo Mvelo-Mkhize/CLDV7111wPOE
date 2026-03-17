@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>EventEase Venue Booking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">EventEase</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Venues" asp-action="Index">Venues</a>
+                    </li>
+                    @if (Context.Session.GetString("UserRole") == "Employee" || Context.Session.GetString("UserRole") == "Admin")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Venues" asp-action="Create">Add Venue</a>
+                        </li>
+                    }
+                    @if (Context.Session.GetString("UserRole") == "Customer")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BookingRequests" asp-action="Index">My Requests</a>
+                        </li>
+                    }
+                    @if (Context.Session.GetString("UserRole") == "Employee" || Context.Session.GetString("UserRole") == "Admin")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BookingRequests" asp-action="Index">Manage Requests</a>
+                        </li>
+                    }
+                    @if (Context.Session.GetString("UserRole") == "Admin")
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                Admin
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="ManageCustomers">Manage Customers</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="ManageEmployees">Manage Employees</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+                <ul class="navbar-nav">
+                    @if (Context.Session.GetString("UserRole") != null)
+                    {
+                        <li class="nav-item">
+                            <span class="navbar-text text-white me-2">Hello, @Context.Session.GetString("UserName")</span>
+                        </li>
+                        <li class="nav-item">
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Register">Register</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        @RenderBody()
+    </div>
+
+    <footer class="border-top footer text-muted mt-5">
+        <div class="container">
+            &copy; 2026 - EventEase Venue Booking System
+        </div>
+    </footer>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,16 @@
+﻿@model CLDV7111wPOE.Models.Venue
+
+<h2>Venue Details</h2>
+
+<div>
+    <h4>@Model.VenueName</h4>
+    <p>Location: @Model.Location</p>
+    <p>Capacity: @Model.Capacity</p>
+
+    <img src="@Model.ImageUrl" width="300" />
+
+    <p>Phone: @Model.ContactPhone</p>
+    <p>Email: @Model.ContactEmail</p>
+</div>
+
+<a asp-action="Index">Back to List</a>

@@ -1,0 +1,131 @@
+﻿@model CLDV7111wPOE.Models.BookingRequest
+@{
+    var venues = ViewBag.Venues as List<CLDV7111wPOE.Models.Venue>;
+}
+
+<h2>New Booking Request</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Event Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="EventName" class="control-label fw-bold"></label>
+                        <input asp-for="EventName" class="form-control" placeholder="e.g., Birthday Party, Conference, Wedding" />
+                        <span asp-validation-for="EventName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="EventDate" class="control-label fw-bold"></label>
+                        <input asp-for="EventDate" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" />
+                        <span asp-validation-for="EventDate" class="text-danger"></span>
+                        <small class="text-muted">Select the date of your event</small>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="ExpectedAttendees" class="control-label fw-bold"></label>
+                        <input asp-for="ExpectedAttendees" type="number" min="1" class="form-control" placeholder="Optional - number of guests" />
+                        <span asp-validation-for="ExpectedAttendees" class="text-danger"></span>
+                        <small class="text-muted">Estimated number of attendees (optional)</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="control-label fw-bold">Select Venue</label>
+                        <select name="venueId" class="form-select" required>
+                            <option value="">-- Select a venue --</option>
+                            @foreach (var venue in venues)
+                            {
+                                <option value="@venue.VenueId" data-capacity="@venue.Capacity">
+                                    @venue.VenueName - @venue.Location (Capacity: @venue.Capacity)
+                                </option>
+                            }
+                        </select>
+                        <small class="text-muted">Choose a venue that fits your expected attendees</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Venue Capacity Information</h5>
+        </div>
+        <div class="card-body">
+            <div id="venueCapacityInfo" class="alert alert-info" style="display: none;">
+                <strong>Selected Venue Capacity:</strong> <span id="selectedVenueCapacity"></span>
+            </div>
+            <div id="attendeeWarning" class="alert alert-warning" style="display: none;">
+                <strong>Warning:</strong> Your expected attendees exceed the venue's capacity!
+            </div>
+            <small>Select a venue above to see its capacity information.</small>
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send"></i> Submit Request
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to My Requests
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('select[name="venueId"]').change(function() {
+                var selectedOption = $(this).find('option:selected');
+                var capacity = selectedOption.data('capacity');
+                var expectedAttendees = $('#ExpectedAttendees').val();
+                
+                if (capacity) {
+                    $('#selectedVenueCapacity').text(capacity);
+                    $('#venueCapacityInfo').show();
+                    
+                    if (expectedAttendees && parseInt(expectedAttendees) > parseInt(capacity)) {
+                        $('#attendeeWarning').show();
+                    } else {
+                        $('#attendeeWarning').hide();
+                    }
+                } else {
+                    $('#venueCapacityInfo').hide();
+                    $('#attendeeWarning').hide();
+                }
+            });
+
+            $('#ExpectedAttendees').on('input', function() {
+                var expected = $(this).val();
+                var selectedOption = $('select[name="venueId"]').find('option:selected');
+                var capacity = selectedOption.data('capacity');
+                
+                if (capacity && expected && parseInt(expected) > parseInt(capacity)) {
+                    $('#attendeeWarning').show();
+                } else {
+                    $('#attendeeWarning').hide();
+                }
+            });
+        });
+    </script>
+    
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

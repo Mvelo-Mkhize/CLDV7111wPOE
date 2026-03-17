@@ -1,0 +1,145 @@
+﻿@model IEnumerable<CLDV7111wPOE.Models.BookingRequest>
+@{
+    var role = Context.Session.GetString("UserRole");
+}
+
+<h2>Manage Booking Requests</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="mb-3">
+    <a asp-action="History" class="btn btn-info">
+        <i class="bi bi-clock-history"></i> View Full History
+    </a>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Event Name</th>
+            <th>Event Date</th>
+            <th>Venue</th>
+            <th>Expected Attendees</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr class="@(request.Status == "Pending" ? "table-warning" : request.Status == "Approved" ? "table-success" : "table-danger")">
+                <td>
+                    @request.Customer?.FirstName @request.Customer?.LastName
+                    <br />
+                    <small class="text-muted">(@request.Customer?.Username)</small>
+                </td>
+                <td>@request.EventName</td>
+                <td>@request.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@request.Venue?.VenueName</td>
+                <td>
+                    @if (request.ExpectedAttendees.HasValue)
+                    {
+                        @request.ExpectedAttendees.Value.ToString("N0")
+                        if (request.Venue != null && request.ExpectedAttendees > request.Venue.Capacity)
+                        {
+                            <span class="badge bg-warning" title="Exceeds venue capacity of @request.Venue.Capacity">⚠️</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not specified</span>
+                    }
+                </td>
+                <td>@request.RequestDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <span class="badge @(request.Status == "Approved" ? "bg-success" : request.Status == "Denied" ? "bg-danger" : "bg-warning")">
+                        @request.Status
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Details" asp-route-id="@request.RequestId" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Details
+                        </a>
+
+                        @if (role == "Admin" || role == "Employee")
+                        {
+                            <a asp-action="Edit" asp-route-id="@request.RequestId" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                    Change Status
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <form asp-action="ChangeStatus" asp-route-id="@request.RequestId" method="post" style="display: inline;">
+                                            <input type="hidden" name="newStatus" value="Pending" />
+                                            <button type="submit" class="dropdown-item @(request.Status == "Pending" ? "active" : "")">
+                                                <span class="text-warning">⏳ Pending</span>
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form asp-action="ChangeStatus" asp-route-id="@request.RequestId" method="post" style="display: inline;">
+                                            <input type="hidden" name="newStatus" value="Approved" />
+                                            <button type="submit" class="dropdown-item @(request.Status == "Approved" ? "active" : "")">
+                                                <span class="text-success">✓ Approved</span>
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form asp-action="ChangeStatus" asp-route-id="@request.RequestId" method="post" style="display: inline;">
+                                            <input type="hidden" name="newStatus" value="Denied" />
+                                            <button type="submit" class="dropdown-item @(request.Status == "Denied" ? "active" : "")">
+                                                <span class="text-danger">✗ Denied</span>
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No booking requests found.
+    </div>
+}
+
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+
+    .btn-group {
+        gap: 5px;
+    }
+
+    .dropdown-item.active {
+        font-weight: bold;
+    }
+</style>

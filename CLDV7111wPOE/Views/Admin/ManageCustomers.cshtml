@@ -1,0 +1,48 @@
+﻿@model IEnumerable<CLDV7111wPOE.Models.User>
+
+<h2>Manage Customers</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@(string.IsNullOrEmpty(customer.FirstName) ? "-" : customer.FirstName)</td>
+                <td>@(string.IsNullOrEmpty(customer.LastName) ? "-" : customer.LastName)</td>
+                <td>@customer.Username</td>
+                <td>@customer.Email</td>
+                <td>
+                    <form asp-action="DeleteCustomer" asp-route-id="@customer.UserId" method="post" onsubmit="return confirm('Delete customer @customer.FirstName @customer.LastName?');">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> No customers found.
+    </div>
+}

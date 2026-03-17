@@ -1,0 +1,58 @@
+﻿@model IEnumerable<CLDV7111wPOE.Models.BookingRequest>
+
+<h2>Booking Request History</h2>
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Current Requests
+    </a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Request ID</th>
+            <th>Customer</th>
+            <th>Event Name</th>
+            <th>Event Date</th>
+            <th>Venue</th>
+            <th>Request Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>#@request.RequestId</td>
+                <td>
+                    @request.Customer?.FirstName @request.Customer?.LastName
+                    <br />
+                    <small class="text-muted">(@request.Customer?.Username)</small>
+                </td>
+                <td>@request.EventName</td>
+                <td>@request.EventDate.ToString("yyyy-MM-dd")</td>
+                <td>@request.Venue?.VenueName</td>
+                <td>@request.RequestDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <span class="badge @(request.Status == "Approved" ? "bg-success" : request.Status == "Denied" ? "bg-danger" : "bg-warning")">
+                        @request.Status
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@request.RequestId" class="btn btn-info btn-sm">
+                        <i class="bi bi-eye"></i> Details
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No booking request history found.
+    </div>
+}

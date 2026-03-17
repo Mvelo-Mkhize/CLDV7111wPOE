@@ -1,0 +1,88 @@
+﻿@model IEnumerable<CLDV7111wPOE.Models.Booking>
+
+<h1>Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <a asp-controller="Venues" asp-action="Index" style="text-decoration: none;">
+            <div class="card bg-primary text-white mb-3 dashboard-card" style="cursor: pointer; transition: transform 0.2s;">
+                <div class="card-body text-center py-5">
+                    <h2 class="display-4">Venues</h2>
+                    <h1 class="display-1 mb-3">@ViewBag.TotalVenues</h1>
+                    <h5>Click to view all venues →</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a asp-controller="Events" asp-action="Index" style="text-decoration: none;">
+            <div class="card bg-success text-white mb-3 dashboard-card" style="cursor: pointer; transition: transform 0.2s;">
+                <div class="card-body text-center py-5">
+                    <h2 class="display-4">Events</h2>
+                    <h1 class="display-1 mb-3">@ViewBag.TotalEvents</h1>
+                    <h5>Click to view all events →</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<hr />
+
+<h3>Recent Bookings</h3>
+
+@if (Model.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Venue</th>
+                <th>Booking Date</th>
+                <th>Booked By</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.Event?.EventName ?? "N/A")</td>
+                    <td>@(item.Venue?.VenueName ?? "N/A")</td>
+                    <td>@item.BookingDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@(item.User?.Username ?? "N/A")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        No recent bookings found.
+    </div>
+}
+
+<p class="mt-4">
+    EventEase is a venue booking management system designed to help booking
+    specialists efficiently manage venues, events, and reservations while
+    preventing double bookings and improving scheduling visibility.
+</p>
+
+<style>
+    .dashboard-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+    
+    .dashboard-card {
+        border-radius: 15px;
+        padding: 10px;
+        min-height: 250px;
+    }
+    
+    .display-1 {
+        font-size: 5rem;
+        font-weight: 700;
+    }
+</style>
